@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Alert, FlatList, ActivityIndicator, Animated, TextInput, Easing } from 'react-native';
+import { StyleSheet, View, Text, Alert, FlatList, ActivityIndicator, Animated, TextInput, Easing, RefreshControl } from 'react-native';
 import Axios from 'axios';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -27,7 +27,7 @@ class App extends React.Component {
         Alert.alert('alert', 'alert');
       })
       .finally(() => {
-        this.setState({ fetchingDados: false })
+        this.setState({ fetchingDados: false, refreshing: false });
       })
   }
 
@@ -105,9 +105,6 @@ class App extends React.Component {
     return (
       <View style={styles.page}>
         <Animated.View style={styles.title}>
-          <View style={styles.titleLeft}>
-            <ActivityIndicator hidesWhenStopped animating={this.state.fetchingDados} color="#000"/>
-          </View>
           <View style={styles.titleRight}>
             <TouchableOpacity onPress={this.openAdd}>
               <Icon name="plus" size={32} color="#000" />
@@ -127,6 +124,7 @@ class App extends React.Component {
         <View style={styles.content}>
           <FlatList
             data={this.state.dados}
+            refreshControl={<RefreshControl color={'#000'} refreshing={this.state.fetchingDados} onRefresh={this.fetchDados} />}
             renderItem={({ item }) => <Item handleDelete={this.handleDelete} handleEdit={this.handleEdit} _id={item._id} item={item} />}
             keyExtractor={item => item.texto}
             ListEmptyComponent={() => <View style={{ alignItems: 'center' }}><Text style={{ fontSize: 18, color: '#333' }}>.</Text></View>}
