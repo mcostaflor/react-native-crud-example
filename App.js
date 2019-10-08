@@ -3,12 +3,14 @@ import { StyleSheet, View, Text, Alert, FlatList, ActivityIndicator, Animated, T
 import Axios from 'axios';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Item from './Item';
 
 class App extends React.Component {
 
   state = {
     dados: [],
     fetchingDados: false,
+    addInput: ''
   }
 
   componentDidMount() {
@@ -29,6 +31,35 @@ class App extends React.Component {
       })
   }
 
+
+  handleAdd = () => {
+    Axios.post('http://192.168.100.33/dado/', { newTexto: this.state.addInput }, { headers: { 'content-type': 'application/json' } })
+      .then(res => {
+        // alert(res.data.length);
+        this.setState({ addInput: '' }),
+          this.closeAdd()
+      })
+      .catch(error => {
+        alert(error);
+      })
+      .finally(() => {
+        this.fetchDados();
+      })
+  }
+
+  handleEdit = (_id, newTexto) => {
+    Axios.put('http://192.168.100.33/dado/' + _id, { newTexto }, { headers: { 'content-type': 'application/json' } })
+      .then(res => {
+
+      })
+      .catch(error => {
+
+      })
+      .finally(() => {
+        this.fetchDados();
+      })
+  }
+
   handleDelete = (_id) => {
     Axios.delete('http://192.168.100.33/dado/' + _id)
       .then(res => {
@@ -42,23 +73,11 @@ class App extends React.Component {
       })
   }
 
-  handleAdd = () => {
-    Axios.post('http://192.168.100.33/dado/', { newText: '' }, { headers: { 'content-type': 'application/json' } })
-      .then(res => {
-        // alert(res.data.length);
-      })
-      .catch(error => {
-        alert(error);
-      })
-      .finally(() => {
-        this.fetchDados();
-      })
-  }
-
   slideX = new Animated.Value(1000);
 
   openAdd = () => {
     // this.slideX.setValue(0);
+    this.setState({ addInput: '' })
     Animated.timing(
       this.slideX,
       {
@@ -83,47 +102,31 @@ class App extends React.Component {
 
 
   render() {
-    const x = this.slideX.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['0', '56']
-    })
     return (
       <View style={styles.page}>
         <Animated.View style={styles.title}>
-          <View style={styles.titleLeft}>
-            {/* <ActivityIndicator hidesWhenStopped animating={this.state.fetchingDados} size={28} /> */}
-            <TouchableOpacity onPress={this.closeAdd}>
-              <Icon name="plus" size={32} color="#000" />
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.titleText}>Dados</Text>
-          <Animated.View style={{ position: 'absolute', left: 0, top: 0, bottom: 0, right: 56, justifyContent: 'center', transform: [{ translateX: this.slideX }] }}>
-            <TextInput style={{ backgroundColor: '#DDD', padding: 4, fontSize: 18, borderRadius: 4 }} />
-          </Animated.View>
           <View style={styles.titleRight}>
             <TouchableOpacity onPress={this.openAdd}>
-              <Icon name="plus" size={32} color="#000" />
+              <Icon name="pencil" size={32} color="#000" />
             </TouchableOpacity>
           </View>
+          <View style={styles.titleLeft}>
+          </View>
+          <Text style={styles.titleText}>Dados</Text>
+
+          <Animated.View style={{ backgroundColor: '#DDD', position: 'absolute', left: 0, top: 0, bottom: 0, right: 0, flexDirection: 'row', alignItems: 'center', left: this.slideX/* transform: [{ translateX: this.slideX }] */ }}>
+            <View style={{ width: 56, alignItems: 'center', justifyContent: 'center' }}><TouchableOpacity onPress={this.closeAdd}><Icon name={'close'} color="#193" size={32} /></TouchableOpacity></View>
+            <TextInput style={{ flex: 1, backgroundColor: '#EEE', padding: 4, fontSize: 18, borderRadius: 4 }} onChangeText={(text) => this.setState({ addInput: text })} value={this.state.addInput} />
+            <View style={{ width: 56, alignItems: 'center', justifyContent: 'center' }}><TouchableOpacity onPress={this.handleAdd}><Icon name={'send'} color="#193" size={32} /></TouchableOpacity></View>
+          </Animated.View>
+
         </Animated.View>
         <View style={styles.content}>
           <FlatList
             data={this.state.dados}
-            renderItem={({ item }) => (
-              <View style={styles.dadoContainer}>
-                <Text style={styles.dadoTexto}>
-                  {item.texto}
-                </Text>
-                <View style={styles.dadoActions}>
-                  <TouchableOpacity onPress={() => this.handleDelete(item._id)}>
-                    <View style={styles.removeButton}>
-                      <Icon name="delete" size={18} color="#FFF" />
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              </View>)}
+            renderItem={({ item }) => <Item handleDelete={this.handleDelete} handleEdit={this.handleEdit} _id={item._id} item={item} />}
             keyExtractor={item => item.texto}
-            ListEmptyComponent={() => <View style={{ alignItems: 'center' }}><Text style={{ fontSize: 18, color: '#333' }}>x</Text></View>}
+            ListEmptyComponent={() => <View style={{ alignItems: 'center' }}><Text style={{ fontSize: 18, color: '#333' }}>.</Text></View>}
           />
         </View>
       </View >
@@ -151,10 +154,14 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   dadoContainer: {
-    // backgroundColor: 'red',
+    backgroundColor: '#FFF',
     flexDirection: 'row',
     height: 40,
     alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    borderRadius: 4,
+    marginBottom: 8
   },
   dadoTexto: {
     flex: 1,
@@ -164,7 +171,6 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red',
   },
   removeButton: {
-    backgroundColor: '#cc0000',
     width: 32,
     height: 32,
     borderRadius: 4,
