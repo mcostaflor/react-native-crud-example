@@ -19,7 +19,7 @@ class App extends React.Component {
 
   fetchDados = () => {
     this.setState({ fetchingDados: true });
-    Axios.get('http://192.168.100.33/dado/')
+    Axios.get('http://10.0.2.2/dado/')
       .then(res => {
         this.setState({ dados: res.data });
       })
@@ -33,7 +33,7 @@ class App extends React.Component {
 
 
   handleAdd = () => {
-    Axios.post('http://192.168.100.33/dado/', { newTexto: this.state.addInput }, { headers: { 'content-type': 'application/json' } })
+    Axios.post('http://10.0.2.2/dado/', { newTexto: this.state.addInput }, { headers: { 'content-type': 'application/json' } })
       .then(res => {
         // alert(res.data.length);
         this.setState({ addInput: '' }),
@@ -48,7 +48,7 @@ class App extends React.Component {
   }
 
   handleEdit = (_id, newTexto) => {
-    Axios.put('http://192.168.100.33/dado/' + _id, { newTexto }, { headers: { 'content-type': 'application/json' } })
+    Axios.put('http://10.0.2.2/dado/' + _id, { newTexto }, { headers: { 'content-type': 'application/json' } })
       .then(res => {
 
       })
@@ -61,7 +61,7 @@ class App extends React.Component {
   }
 
   handleDelete = (_id) => {
-    Axios.delete('http://192.168.100.33/dado/' + _id)
+    Axios.delete('http://10.0.2.2/dado/' + _id)
       .then(res => {
         // alert(res.data.length);
       })
@@ -105,9 +105,12 @@ class App extends React.Component {
     return (
       <View style={styles.page}>
         <Animated.View style={styles.title}>
+          <View style={styles.titleLeft}>
+            <ActivityIndicator hidesWhenStopped animating={this.state.fetchingDados} color="#000"/>
+          </View>
           <View style={styles.titleRight}>
             <TouchableOpacity onPress={this.openAdd}>
-              <Icon name="pencil" size={32} color="#000" />
+              <Icon name="plus" size={32} color="#000" />
             </TouchableOpacity>
           </View>
           <View style={styles.titleLeft}>
@@ -117,7 +120,7 @@ class App extends React.Component {
           <Animated.View style={{ backgroundColor: '#DDD', position: 'absolute', left: 0, top: 0, bottom: 0, right: 0, flexDirection: 'row', alignItems: 'center', left: this.slideX/* transform: [{ translateX: this.slideX }] */ }}>
             <View style={{ width: 56, alignItems: 'center', justifyContent: 'center' }}><TouchableOpacity onPress={this.closeAdd}><Icon name={'close'} color="#193" size={32} /></TouchableOpacity></View>
             <TextInput style={{ flex: 1, backgroundColor: '#EEE', padding: 4, fontSize: 18, borderRadius: 4 }} onChangeText={(text) => this.setState({ addInput: text })} value={this.state.addInput} />
-            <View style={{ width: 56, alignItems: 'center', justifyContent: 'center' }}><TouchableOpacity onPress={this.handleAdd}><Icon name={'send'} color="#193" size={32} /></TouchableOpacity></View>
+            <View style={{ width: 56, alignItems: 'center', justifyContent: 'center' }}><TouchableOpacity onPress={this.handleAdd}><Icon name={'plus'} color="#193" size={32} /></TouchableOpacity></View>
           </Animated.View>
 
         </Animated.View>

@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
         height: 40,
         alignItems: 'center',
         paddingVertical: 8,
-        paddingHorizontal: 4,
+        paddingHorizontal: 8,
         borderRadius: 4,
         marginBottom: 8,
     },
@@ -36,8 +36,8 @@ class Item extends Component {
     state = {
         editInput: this.props.item.texto
     };
-    editCoverLeft = new Animated.Value(1000)
 
+    editCoverLeft = new Animated.Value(1000)
 
     openEdit = () => {
         Animated.timing(
@@ -68,7 +68,7 @@ class Item extends Component {
                 <View style={styles.dadoActions}>
                     <TouchableOpacity onPress={this.openEdit}>
                         <View style={styles.removeButton}>
-                            <Icon name="pen" size={24} color="yellow" />
+                            <Icon name="pencil" size={24} color="#000" />
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => this.props.handleDelete(this.props._id)}>
@@ -77,7 +77,7 @@ class Item extends Component {
                         </View>
                     </TouchableOpacity>
                 </View>
-                <Animated.View style={{ position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, left: this.editCoverLeft, backgroundColor: 'yellow', flexDirection: 'row', alignItems: 'center' }}>
+                <Animated.View style={{ position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, left: this.editCoverLeft, backgroundColor: '#f5f5f5', flexDirection: 'row', alignItems: 'center', borderRadius: 4 }}>
                     <TouchableOpacity style={{ width: 40, height: '100%', alignItems: 'center', justifyContent: 'center' }} onPress={this.closeEdit}>
                         <Icon name="close" color="#000" size={24} />
                     </TouchableOpacity>
